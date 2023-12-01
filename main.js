@@ -5,61 +5,60 @@ function generateID() {
     };
   }
   var id = generateID();
-
-function makePatient(name,lastname,email,password){
- var obj={}
- obj.id=id()
- obj.name=name
- obj.lastname=lastname
- obj.email=email
- obj.password=password
- return obj
-}
-function Makedoctor(email,pass){
+  
+  function makePatient(name,lastname,email,password){
+  var obj={}
+  obj.id=id()
+  obj.name=name
+  obj.lastname=lastname
+  obj.email=email
+  obj.password=password
+  return obj
+  }
+  function Makedoctor(email,pass){
     var obj ={}
     obj.email=email
     obj.pass=pass
     obj.add=add
     obj.listpatients=[]
-    obj.consultation=consultation
-    obj.reservation=reservation
+    //obj.reservation=reservation
     return obj
-}
-var add=function(name,lastname,email,password){
-var result=makePatient(name,lastname,email,password)
-this.listpatients.push(result)
-}
-
-var p=Makedoctor()
-
-$("#create-account").on("click", function() {
+  }
+  var add=function(name,lastname,email,password){
+  var result=makePatient(name,lastname,email,password)
+  this.listpatients.push(result)
+  }
+  
+  
+  
+  $("#create-account").on("click", function() {
     const name1=$("#name").val()
-const lastname1=$("#lastname").val()
-const email1=$("#email").val()
-const password1=$("#password").val()
-    if(localStorage.getItem("doctor")===undefined){
-        
-p.add(name1,lastname1,email1,password1)
-console.log(p)
-var DoctorJason = JSON.stringify(p);
-localStorage.setItem('doctor', DoctorJason);
-console.log(DoctorJason)
-window.location.href="doctor.html"
+  const lastname1=$("#lastname").val()
+  const email1=$("#email").val()
+  const password1=$("#password").val()
+    if(!localStorage.getItem("doctor")){
+        var p=Makedoctor()
+  p.add(name1,lastname1,email1,password1)
+  console.log(p)
+  var DoctorJason = JSON.stringify(p);
+  localStorage.setItem('doctor', DoctorJason);
+  console.log(DoctorJason)
+  window.location.href="doctor.html"
     }
     else{
     var doct1 = localStorage.getItem('doctor');
     var doct = JSON.parse(doct1);
-    doct.listpatients.push({name:name1,lastname:lastname1,email:email1,password:password1,consultation:{discription:"",prescription:""},date:""})
+    doct.listpatients.push({name:name1,lastname:lastname1,email:email1,password:password1})
     localStorage.clear();
-var DoctorJason = JSON.stringify(doct);
-localStorage.setItem('doctor', DoctorJason);
-console.log(DoctorJason)
-window.location.href="doctor.html"
+  var DoctorJason = JSON.stringify(doct);
+  localStorage.setItem('doctor', DoctorJason);
+  console.log(DoctorJason)
+  window.location.href="doctor.html"
     }
-});
-
-
-$("#login").on("click", function() {
+  });
+  
+  
+  $("#login").on("click", function() {
     const email=$("#email").val();
     const password=$("#password").val();
     var doct1 = localStorage.getItem('doctor');
@@ -78,35 +77,46 @@ $("#login").on("click", function() {
             
         }
     }
-console.log(p)
-});
-function displaylist(){
-    $("#add").empty()
-    var doct1 = localStorage.getItem('doctor');
-    var doct = JSON.parse(doct1);
-    for (let index = 0; index < doct.listpatients.length; index++) {
-      $('#add').append(`<li> <span>${doct.listpatients[index].name}</span> <span>${doct.listpatients[index].consultation}</span>
-       <span>${doct.listpatients[index].prescription}</span></li>`) 
-    }}
-    displaylist()
-    var consultation=function(email,description,prescretion){
-        var doct1 = localStorage.getItem('doctor');
+  console.log(p)
+  });
+  function displaylist(){
+$("#add").empty()
+var doct1 = localStorage.getItem('doctor');
+var doct = JSON.parse(doct1);
+for (let index = 0; index < doct.listpatients.length; index++) {
+ $('#add').append(`<li> <span>${doct.listpatients[index].name}</span> <span>${doct.listpatients[index].consultation}</span>
+<span>${doct.listpatients[index].prescription}</span></li>`) 
+}}
+displaylist()
+    var consultation = function(email, description, prescription) {
+      var doct1 = localStorage.getItem('doctor');
+      var doct = JSON.parse(doct1);
+      for (let index = 0; index < doct.listpatients.length; index++) {
+        console.log(doct.listpatients[index].hasOwnProperty('consultation'));
+         if (email === doct.listpatients[index].email) {
+           if (!doct.listpatients[index].hasOwnProperty('consultation')) {
+             doct.listpatients[index].consultation = [];
+             
+           }
+           doct.listpatients[index].consultation.push({
+             description: description,
+             prescription: prescription,
+           });
+           break;
+         }
+      }
+      var DoctorJason = JSON.stringify(doct);
+      localStorage.setItem('doctor', DoctorJason);
+     };
+    $('#btupinfo').on('click',function(){
+      const patientemail=$('#patientemail').val()
+      const description=$('#description').val()
+      const prescreption=$('#prescreption').val()
+      console.log(patientemail);
+      console.log(description);
+      console.log(prescreption);
+      var doct1 = localStorage.getItem('doctor');
         var doct = JSON.parse(doct1);
-        for (let index = 0; index < doct.listpatients.length; index++) {
-            if(email===doct.listpatients.email){
-                doct.listpatients[index].description=description
-                doct.listpatients[index].prescretion=prescretion
-            }
-                localStorage.clear();
-                var DoctorJason = JSON.stringify(doct);
-                localStorage.setItem('doctor', DoctorJason);
-        }
-    }
-    $("btupinfo").on("click",function(){
-        const e=$("patientemail").val()
-        const d=$("description").val()
-        const p=$("prescrition").val()
-        var p=localStorage.getItem("doctor")
-        var o=JSON.parse("p")
-    })
-    
+        consultation(patientemail,description,prescreption)
+      console.log(doct);
+    });
